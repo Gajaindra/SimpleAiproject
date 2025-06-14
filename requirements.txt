@@ -4,3 +4,4 @@ faiss-cpu
 pymupdf
 groq
 sentence-transformers
+gunicorn
