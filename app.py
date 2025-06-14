@@ -1,6 +1,6 @@
+import os
 from flask import Flask, render_template, request
 from qa_chain import extract_text_from_pdf, create_qa_chain_from_text
-import os
 
 app = Flask(__name__)
 qa_chain = None
@@ -17,7 +17,14 @@ def index():
             qa_chain = create_qa_chain_from_text(text)
         elif 'question' in request.form and qa_chain:
             question = request.form['question']
-            answer = qa_chain.run(question)
+            try:
+                answer = qa_chain.run(question)
+            except Exception as e:
+                # Log the error and return a friendly message
+                print(f"Error during QA chain run: {str(e)}")
+                answer = f"⚠️ Error while processing your question: {str(e)}"
+        elif 'question' in request.form:
+            answer = "⚠️ Please upload a PDF first."
 
     return render_template("index.html", answer=answer)
 
