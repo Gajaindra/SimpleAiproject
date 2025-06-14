@@ -5,3 +5,6 @@ pymupdf
 groq
 sentence-transformers
 gunicorn
+PyMuPDF
+langchain-community
+langchain-groq
