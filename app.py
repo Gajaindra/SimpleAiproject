@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from qa_chain import extract_text_from_pdf, create_qa_chain_from_text
+import os
 
 app = Flask(__name__)
 qa_chain = None
@@ -20,5 +21,7 @@ def index():
 
     return render_template("index.html", answer=answer)
 
+
 if __name__ == "__main__":
-    app.run(port=9000)
+    port = int(os.environ.get("PORT", 5000))  # Use Render's PORT or default to 5000
+    app.run(host="0.0.0.0", port=port)
