@@ -1,30 +1,23 @@
-import fitz  # PyMuPDF
-from langchain.text_splitter import CharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
-from langchain.chains import RetrievalQA
-from langchain_groq import ChatGroq  # For Groq LLM
+from flask import Flask, render_template, request
+from qa_chain import extract_text_from_pdf, create_qa_chain_from_text
 
-groq_api_key = "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"  # Use env var in production
+app = Flask(__name__)
+qa_chain = None
 
-def extract_text_from_pdf(file):
-    text = ""
-    doc = fitz.open(stream=file.read(), filetype="pdf")
-    for page in doc:
-        text += page.get_text()
-    return text
+@app.route("/", methods=["GET", "POST"])
+def index():
+    global qa_chain
+    answer = None
 
-def create_qa_chain_from_text(text):
-    splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
-    docs = splitter.create_documents([text])
+    if request.method == "POST":
+        if 'pdf' in request.files:
+            file = request.files['pdf']
+            text = extract_text_from_pdf(file)
+            qa_chain = create_qa_chain_from_text(text)
+        elif 'question' in request.form and qa_chain:
+            question = request.form['question']
+            answer = qa_chain.run(question)
 
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    db = FAISS.from_documents(docs, embeddings)
-    retriever = db.as_retriever()
-
-    llm = ChatGroq(
-        groq_api_key=groq_api_key,
-        model="llama3-70b-8192"
-    )
-
-    return RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+    return render_template("index.html", answer=answer)
+if __name__ == "__main__":
+    app.run(debug=True)
