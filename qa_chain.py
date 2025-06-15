@@ -3,9 +3,8 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
-from langchain_groq import ChatGroq  # For Groq LLM
-
-groq_api_key = "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"  # Use env var in production
+from langchain_groq import ChatGroq
+import os
 
 def extract_text_from_pdf(file):
     text = ""
@@ -22,9 +21,9 @@ def create_qa_chain_from_text(text):
     db = FAISS.from_documents(docs, embeddings)
     retriever = db.as_retriever()
 
-    llm = ChatGroq(
-        groq_api_key=groq_api_key,
-        model="llama3-70b-8192"
-    )
+    groq_api_key = os.getenv("GROQ_API_KEY")
+    if not groq_api_key:
+        raise ValueError("GROQ_API_KEY environment variable not set.")
 
+    llm = ChatGroq(groq_api_key=groq_api_key, model="llama3-70b-8192")
     return RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
