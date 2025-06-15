@@ -6,3 +6,4 @@ groq
 pymupdf
 langchain
 langchain-community
+langchain-groq
