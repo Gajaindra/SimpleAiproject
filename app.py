@@ -1,4 +1,3 @@
-import os
 from flask import Flask, render_template, request
 from qa_chain import extract_text_from_pdf, create_qa_chain_from_text
 
@@ -17,16 +16,9 @@ def index():
             qa_chain = create_qa_chain_from_text(text)
         elif 'question' in request.form and qa_chain:
             question = request.form['question']
-            try:
-                answer = qa_chain.run(question)
-            except Exception as e:
-                print(f"Error: {str(e)}")
-                answer = f"⚠️ Error: {str(e)}"
-        elif 'question' in request.form:
-            answer = "⚠️ Please upload a PDF first."
+            answer = qa_chain.run(question)
 
     return render_template("index.html", answer=answer)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(port=9000)
