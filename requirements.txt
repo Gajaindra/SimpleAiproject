@@ -1,9 +1,8 @@
 flask
-faiss-cpu
-sentence-transformers
 gunicorn
-groq
 pymupdf
 langchain
 langchain-community
 langchain-groq
+sentence-transformers
+faiss-cpu
