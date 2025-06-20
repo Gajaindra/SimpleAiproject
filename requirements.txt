@@ -1,0 +1,6 @@
+Flask
+pandas
+openpyxl
+PyMuPDF
+langchain>=0.1.0
+langchain-groq
