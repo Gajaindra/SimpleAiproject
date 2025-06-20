@@ -4,3 +4,4 @@ openpyxl
 PyMuPDF
 langchain>=0.1.0
 langchain-groq
+gunicorn==21.2.0
